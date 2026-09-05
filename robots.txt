@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://tal1725.github.io/sitemap.xml
