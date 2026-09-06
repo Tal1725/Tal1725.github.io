@@ -1,0 +1,32 @@
+name: Corrigir redirect de autenticação do PULSO
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/pulso-auth-redirect.yml
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Corrigir emailRedirectTo
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('assets/js/main.js')
+          s=p.read_text()
+          old="options:{data:{display_name:name,username:username}}"
+          new="options:{emailRedirectTo:'https://tal1725.github.io/',data:{display_name:name,username:username}}"
+          if old not in s:
+              raise SystemExit('Padrão esperado não encontrado')
+          p.write_text(s.replace(old,new,1))
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'PULSO Bot'
+          git config user.email 'actions@github.com'
+          git add assets/js/main.js
+          git commit -m 'Corrige redirect de confirmação do PULSO' || exit 0
+          git push
